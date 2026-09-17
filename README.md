@@ -42,6 +42,38 @@ docker compose up -d --build
 
 `APP_ENV` y `VITE_API_URL` pueden sobrescribirse al construir. Una URL local es solamente una opcion de desarrollo, no un tercer entorno.
 
+## Desarrollo de ramas test con volumen
+
+Para `develop` y `feature/*`, usa Vite dentro de Docker con el codigo montado como volumen y la API fija de pruebas:
+
+```powershell
+docker compose -p rest-panel-dev -f docker-compose.dev.yml up -d
+```
+
+Abre `http://localhost:5173`. Vite detecta cambios de archivos y cambios de rama sin ejecutar `docker build`.
+
+Si una rama cambia `package.json` o `package-lock.json`, reinicia el servicio para volver a ejecutar `npm ci`:
+
+```powershell
+docker compose -p rest-panel-dev -f docker-compose.dev.yml restart admin
+```
+
+Para validar `main` contra produccion, construye la imagen release:
+
+```powershell
+$env:APP_ENV = "production"
+$env:VITE_API_URL = "https://api.restapp.site"
+docker compose -p rest-panel-release up -d --build
+Remove-Item Env:APP_ENV
+Remove-Item Env:VITE_API_URL
+```
+
+Detener desarrollo:
+
+```powershell
+docker compose -p rest-panel-dev -f docker-compose.dev.yml down
+```
+
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
 Currently, two official plugins are available:
