@@ -1,5 +1,37 @@
 # React + TypeScript + Vite
 
+## Entornos de API
+
+El Panel utiliza `VITE_API_URL` como unica fuente para Axios y Socket.IO.
+
+```bash
+# Panel local conectado al entorno de pruebas del VPS
+npm run dev
+
+# Equivalente explicito
+npm run dev:test
+
+# Panel local conectado a produccion
+npm run dev:production
+
+# Build de pruebas
+npm run build:test
+
+# Build de produccion
+npm run build
+```
+
+| Entorno | API |
+|---|---|
+| `test` | `https://api-test.restapp.site` |
+| `production` | `https://api.restapp.site` |
+
+`localhost` no es un tercer entorno. Si tambien se ejecuta el backend en el equipo local, crea `.env.test.local` (no versionado); Vite lo usara como sobrescritura personal del entorno `test`:
+
+```dotenv
+VITE_API_URL=http://localhost:3000
+```
+
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
 Currently, two official plugins are available:
