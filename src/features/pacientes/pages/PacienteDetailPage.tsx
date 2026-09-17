@@ -4,7 +4,7 @@ import { ArrowLeft, MessageCircle, Activity, ClipboardList, BarChart3 } from 'lu
 import { Header } from '../../../components/layout/Header';
 import { Card, Badge, Button } from '../../../components/ui';
 import { LoadingSpinner, ErrorState } from '../../../components/shared';
-import { pacientesApi, chatApi } from '../../../api';
+import { pacientesApi } from '../../../api';
 import type { Estudiante, Evaluacion } from '../../../types';
 
 export default function PacienteDetailPage() {
@@ -36,21 +36,8 @@ export default function PacienteDetailPage() {
     }
   }
 
-  async function handleAbrirChat() {
-    try {
-      const chats = await chatApi.getChats(true);
-      const chatExistente = chats.find(
-        (c: any) => c.estudiante_id === estudianteId && !c.isSendByAi
-      );
-      if (chatExistente) {
-        navigate(`/chat/${estudianteId}?chatId=${chatExistente.id}`);
-      } else {
-        const nuevoChat = await chatApi.createChat(estudianteId);
-        navigate(`/chat/${estudianteId}?chatId=${nuevoChat.id}`);
-      }
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Error al abrir chat');
-    }
+  function handleAbrirChat() {
+    navigate(`/chat/${estudianteId}`);
   }
 
   if (loading) return <LoadingSpinner />;

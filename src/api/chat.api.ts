@@ -2,17 +2,19 @@ import api from './axiosInstance';
 import type { Chat, Mensaje } from '../types';
 
 export const chatApi = {
-  getChats: async (active?: boolean): Promise<Chat[]> => {
-    const params = active !== undefined ? `?active=${active}` : '';
-    const { data } = await api.get(`/api/chats${params}`);
+  abrirChat: async (estudianteId: number): Promise<Chat> => {
+    const { data } = await api.post(`/api/psicologo/pacientes/${estudianteId}/chat`);
     return data.data ?? data;
   },
 
-  createChat: async (estudianteId: number): Promise<Chat> => {
-    const { data } = await api.post('/api/chats', {
-      estudiante_id: estudianteId,
-      psicologo_id: JSON.parse(localStorage.getItem('user') || '{}').id,
-    });
+  getChatsPaciente: async (estudianteId: number): Promise<Chat[]> => {
+    const { data } = await api.get(`/api/psicologo/pacientes/${estudianteId}/chats`);
+    return data.data ?? data;
+  },
+
+  getChats: async (active?: boolean): Promise<Chat[]> => {
+    const params = active !== undefined ? `?active=${active}` : '';
+    const { data } = await api.get(`/api/chats${params}`);
     return data.data ?? data;
   },
 
