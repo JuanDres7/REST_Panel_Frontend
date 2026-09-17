@@ -32,6 +32,16 @@ npm run build
 VITE_API_URL=http://localhost:3000
 ```
 
+## Contenedor local
+
+Por defecto el contenedor consume el entorno `test` y publica el Panel en `http://localhost:8080`:
+
+```bash
+docker compose up -d --build
+```
+
+`APP_ENV` y `VITE_API_URL` pueden sobrescribirse al construir. Una URL local es solamente una opcion de desarrollo, no un tercer entorno.
+
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
 Currently, two official plugins are available:
