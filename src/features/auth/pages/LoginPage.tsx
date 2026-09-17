@@ -4,6 +4,19 @@ import { authApi } from '../../../api';
 import { useAuthStore } from '../store/authStore';
 import { Button, Input, Card } from '../../../components/ui';
 
+// El backend no envía el rol dentro del objeto "user" de la respuesta de login;
+// lo manda como campo "role" (en inglés) dentro del token JWT. Esta función
+// decodifica esa parte del token para poder leerlo.
+function decodeRoleFromToken(token: string): string | null {
+  try {
+    const payload = token.split('.')[1];
+    const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+    return decoded.role ?? decoded.rol ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export default function LoginPage() {
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
@@ -19,15 +32,18 @@ export default function LoginPage() {
 
     try {
       const data = await authApi.login(correo, contrasena);
-      const user = (data as any).user ?? data;
+      const rawUser = (data as any).user ?? data;
       const token = (data as any).token;
-      login(token, user);
 
-      if (user.rol !== 'psicologo') {
+      const rol = rawUser.rol ?? decodeRoleFromToken(token);
+      const user = { ...rawUser, rol };
+
+      if (rol !== 'psicologo') {
         setError('Este panel es exclusivo para psicologos');
         return;
       }
 
+      login(token, user);
       navigate('/');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Error al iniciar sesion');
