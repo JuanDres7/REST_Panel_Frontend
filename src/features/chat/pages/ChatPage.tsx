@@ -97,10 +97,16 @@ export default function ChatPage() {
       setMensajes(mensajesData);
       setEstudiante(estudianteData);
     } catch (err: any) {
-      if (err.response?.status === 403) {
+      const status = err.response?.status;
+      if (status === 403) {
         setForbidden(true);
       } else {
-        setError(err.response?.data?.message || 'Error al cargar el chat');
+        const msg =
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          err.message ||
+          'Error al cargar el chat';
+        setError(msg);
       }
     } finally {
       setLoading(false);

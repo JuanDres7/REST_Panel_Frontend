@@ -2,14 +2,30 @@ import api from './axiosInstance';
 import type { Chat, Mensaje } from '../types';
 
 export const chatApi = {
+  /**
+   * Busca un chat activo con el estudiante dado (no-IA).
+   * Si no existe, lo crea via POST /api/chats con { estudianteId }.
+   * Usa únicamente los endpoints funcionales del backend:
+   *   GET  /api/chats
+   *   POST /api/chats
+   */
   abrirChat: async (estudianteId: number): Promise<Chat> => {
-    const { data } = await api.post(`/api/psicologo/pacientes/${estudianteId}/chat`);
-    return data.data ?? data;
-  },
+    const { data: listaRaw } = await api.get('/api/chats');
+    const lista: Chat[] = listaRaw.data ?? listaRaw;
 
-  getChatsPaciente: async (estudianteId: number): Promise<Chat[]> => {
-    const { data } = await api.get(`/api/psicologo/pacientes/${estudianteId}/chats`);
-    return data.data ?? data;
+    // Buscar un chat activo con ese estudiante que no sea IA
+    const existente = lista.find(
+      (c) => c.estudiante_id === estudianteId && c.is_active && !c.isSendByAi
+    );
+    if (existente) return existente;
+
+    // No existe → crear. Enviamos ambas variantes por compatibilidad
+    // con el backend (camelCase y snake_case)
+    const { data: nuevoRaw } = await api.post('/api/chats', {
+      estudianteId,
+      estudiante_id: estudianteId,
+    });
+    return nuevoRaw.data ?? nuevoRaw;
   },
 
   getChats: async (active?: boolean): Promise<Chat[]> => {
