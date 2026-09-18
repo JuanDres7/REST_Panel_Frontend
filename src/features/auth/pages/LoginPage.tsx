@@ -4,6 +4,16 @@ import { authApi } from '../../../api';
 import { useAuthStore } from '../store/authStore';
 import { Button, Input, Card } from '../../../components/ui';
 
+function getRolFromToken(token: string): string | null {
+  try {
+    const payload = token.split('.')[1];
+    const json = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
+    return json?.role ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export default function LoginPage() {
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
@@ -21,13 +31,14 @@ export default function LoginPage() {
       const data = await authApi.login(correo, contrasena);
       const user = (data as any).user ?? data;
       const token = (data as any).token;
-      login(token, user);
+      const rol = user?.rol ?? getRolFromToken(token);
 
-      if (user.rol !== 'psicologo') {
+      if (rol !== 'psicologo') {
         setError('Este panel es exclusivo para psicologos');
         return;
       }
 
+      login(token, { ...user, rol });
       navigate('/');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Error al iniciar sesion');
