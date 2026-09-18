@@ -22,6 +22,8 @@ import type {
   EvaluacionHistorial,
   ActividadHistorial,
   EncuestaRespuestaHistorial,
+  EncuestaInstitucional,
+  PreguntaEncuesta,
 } from '../../../types';
 import { EvaluacionCard } from '../components/EvaluacionCard';
 import { DimensionesSemaforo } from '../components/DimensionesSemaforo';
@@ -59,6 +61,7 @@ export default function PacienteDetailPage() {
   const [evaluaciones, setEvaluaciones] = useState<EvaluacionHistorial[] | null>(null);
   const [actividades, setActividades] = useState<ActividadHistorial[] | null>(null);
   const [encuestas, setEncuestas] = useState<EncuestaRespuestaHistorial[] | null>(null);
+  const [definicionesEncuestas, setDefinicionesEncuestas] = useState<Record<number, EncuestaInstitucional>>({});
   const [loadingResumen, setLoadingResumen] = useState(true);
   const [tabLoading, setTabLoading] = useState(false);
   const [error, setError] = useState('');
@@ -121,7 +124,22 @@ export default function PacienteDetailPage() {
     setTabLoading(true);
     setError('');
     try {
-      setEncuestas(await pacientesApi.getEncuestas(estudianteId));
+      const respuestas = await pacientesApi.getEncuestas(estudianteId);
+      setEncuestas(respuestas);
+
+      const idsEncuestas = [...new Set(
+        respuestas.map((respuesta) => respuesta.encuesta?.id).filter((id): id is number => Boolean(id)),
+      )];
+      const resultados = await Promise.allSettled(
+        idsEncuestas.map((id) => pacientesApi.getEncuestaInstitucional(id)),
+      );
+      setDefinicionesEncuestas((previas) => {
+        const actualizadas = { ...previas };
+        resultados.forEach((resultado) => {
+          if (resultado.status === 'fulfilled') actualizadas[resultado.value.id] = resultado.value;
+        });
+        return actualizadas;
+      });
     } catch (err: any) {
       setError(extraerMensaje(err));
     } finally {
@@ -262,7 +280,35 @@ export default function PacienteDetailPage() {
               {r.encuesta && (
                 <p className="text-xs text-text-muted mb-2">Codigo: {r.encuesta.codigo}</p>
               )}
-              {r.respuesta ? (
+              {extraerRespuestasConPuntaje(r.respuesta).length > 0 ? (
+                <details className="rounded-lg bg-surface-secondary p-3">
+                  <summary className="cursor-pointer text-sm font-medium text-primary select-none">
+                    Ver {extraerRespuestasConPuntaje(r.respuesta).length} respuestas
+                  </summary>
+                  <ol className="mt-3 space-y-3">
+                    {extraerRespuestasConPuntaje(r.respuesta).map((respuesta, index) => {
+                      const pregunta = extraerPreguntas(
+                        r.encuesta ? definicionesEncuestas[r.encuesta.id] : undefined,
+                      ).find((item) => item.id === respuesta.pregunta_id);
+                      const maximo = pregunta?.escala?.split('-').at(-1);
+                      return (
+                        <li key={`${r.id}-${respuesta.pregunta_id}`} className="rounded-md bg-white p-3">
+                          <div className="flex items-start justify-between gap-3">
+                            <p className="text-sm text-text-primary">
+                              <span className="font-semibold">{index + 1}. </span>
+                              {pregunta?.texto ?? `Pregunta ${respuesta.pregunta_id}`}
+                            </p>
+                            <Badge variant="gray">Puntaje: {respuesta.puntaje}{maximo ? ` / ${maximo}` : ''}</Badge>
+                          </div>
+                          {pregunta?.categoria && (
+                            <p className="mt-1 text-xs text-text-muted">Categoría: {pregunta.categoria}</p>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ol>
+                </details>
+              ) : r.respuesta ? (
                 <pre className="text-sm text-text-secondary whitespace-pre-wrap bg-surface-secondary rounded-lg p-3">
                   {formatearRespuesta(r.respuesta)}
                 </pre>
@@ -450,4 +496,37 @@ export default function PacienteDetailPage() {
       {renderContenido()}
     </div>
   );
+}
+
+interface RespuestaConPuntaje {
+  pregunta_id: string;
+  puntaje: number | string;
+}
+
+function extraerPreguntas(encuesta?: EncuestaInstitucional): PreguntaEncuesta[] {
+  if (!encuesta?.opciones) return [];
+  try {
+    const opciones = typeof encuesta.opciones === 'string'
+      ? JSON.parse(encuesta.opciones)
+      : encuesta.opciones;
+    return Array.isArray(opciones?.preguntas) ? opciones.preguntas : [];
+  } catch {
+    return [];
+  }
+}
+
+function extraerRespuestasConPuntaje(respuesta: string | null): RespuestaConPuntaje[] {
+  if (!respuesta) return [];
+  try {
+    const contenido = JSON.parse(respuesta);
+    return Array.isArray(contenido?.respuestas)
+      ? contenido.respuestas.filter((item: unknown): item is RespuestaConPuntaje => {
+        const respuestaItem = item as Partial<RespuestaConPuntaje>;
+        return typeof respuestaItem.pregunta_id === 'string' &&
+          (typeof respuestaItem.puntaje === 'number' || typeof respuestaItem.puntaje === 'string');
+      })
+      : [];
+  } catch {
+    return [];
+  }
 }

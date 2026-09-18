@@ -85,3 +85,17 @@ export interface EncuestaRespuestaHistorial {
     titulo: string;
   } | null;
 }
+
+export interface PreguntaEncuesta {
+  id: string;
+  texto: string;
+  categoria?: string;
+  escala?: string;
+}
+
+export interface EncuestaInstitucional {
+  id: number;
+  codigo: string;
+  titulo: string;
+  opciones: string | { preguntas?: PreguntaEncuesta[] } | null;
+}

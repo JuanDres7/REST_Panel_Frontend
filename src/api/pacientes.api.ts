@@ -1,5 +1,6 @@
 import api from './axiosInstance';
 import type {
+  Asignacion,
   EstudianteResumen,
   RegistroEmocional,
   EstadisticasEmocionales,
@@ -8,12 +9,25 @@ import type {
   EvaluacionHistorial,
   ActividadHistorial,
   EncuestaRespuestaHistorial,
+  EncuestaInstitucional,
 } from '../types';
 
 export const pacientesApi = {
   getMisPacientes: async (): Promise<EstudianteResumen[]> => {
     const { data } = await api.get('/api/asignaciones/psicologo/mis-pacientes');
-    return data.data ?? data;
+    const asignaciones: Asignacion[] = data.data ?? data;
+
+    return Promise.all(asignaciones.map(async (asignacion) => {
+      const resumen = await pacientesApi.getResumen(asignacion.estudiante_id);
+      return {
+        id: resumen.perfil.id,
+        nombres: resumen.perfil.nombres,
+        apellidos: resumen.perfil.apellidos,
+        ultimo_semaforo: resumen.ultima_evaluacion?.estado_semaforo ?? null,
+        fecha_ultima_actividad:
+          resumen.ultima_evaluacion?.fecha ?? asignacion.procesado_en,
+      };
+    }));
   },
 
   getResumen: async (id: number): Promise<ResumenEstudiante> => {
@@ -48,6 +62,11 @@ export const pacientesApi = {
 
   getEncuestas: async (id: number): Promise<EncuestaRespuestaHistorial[]> => {
     const { data } = await api.get(`/api/psicologo/pacientes/${id}/encuestas`);
+    return data.data ?? data;
+  },
+
+  getEncuestaInstitucional: async (id: number): Promise<EncuestaInstitucional> => {
+    const { data } = await api.get(`/api/encuestas/${id}`);
     return data.data ?? data;
   },
 };

@@ -14,4 +14,6 @@ export type {
   EvaluacionHistorial,
   ActividadHistorial,
   EncuestaRespuestaHistorial,
+  PreguntaEncuesta,
+  EncuestaInstitucional,
 } from './panel.types';
