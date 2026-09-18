@@ -6,7 +6,7 @@ import { useChatSocket } from '../../../hooks/useChatSocket';
 import { chatApi, pacientesApi } from '../../../api';
 import { Card } from '../../../components/ui';
 import { LoadingSpinner, ErrorState } from '../../../components/shared';
-import type { Mensaje, SocketMessage, Estudiante } from '../../../types';
+import type { Mensaje, SocketMessage, PerfilEstudiante } from '../../../types';
 
 const TYPING_TIMEOUT_MS = 2500;
 
@@ -19,7 +19,7 @@ export default function ChatPage() {
   const [chatId, setChatId] = useState<number | null>(null);
   const [mensajes, setMensajes] = useState<Mensaje[]>([]);
   const [nuevoMensaje, setNuevoMensaje] = useState('');
-  const [estudiante, setEstudiante] = useState<Estudiante | null>(null);
+  const [estudiante, setEstudiante] = useState<PerfilEstudiante | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [forbidden, setForbidden] = useState(false);
