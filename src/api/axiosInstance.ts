@@ -1,7 +1,9 @@
 import axios from 'axios';
+import { API_URL } from './apiConfig';
+import { useAuthStore } from '../features/auth/store/authStore';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
+  baseURL: API_URL,
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -17,11 +19,11 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      useAuthStore.getState().logout();
       window.location.href = '/login';
     }
     if (error.response?.status === 403) {
+      useAuthStore.getState().logout();
       window.location.href = '/acceso-denegado';
     }
     return Promise.reject(error);
