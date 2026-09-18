@@ -10,6 +10,7 @@ import {
   LayoutGrid,
   ShieldOff,
   CheckCircle2,
+  Heart,
   type LucideIcon,
 } from 'lucide-react';
 import { Header } from '../../../components/layout/Header';
@@ -26,11 +27,16 @@ import { EvaluacionCard } from '../components/EvaluacionCard';
 import { DimensionesSemaforo } from '../components/DimensionesSemaforo';
 import { semaforoVariant } from '../components/nivelSemaforo';
 
-type Tab = 'resumen' | 'evaluaciones' | 'actividades' | 'encuestas';
+import { RegistrosEmocional } from '../components/RegistrosEmocional';
+import { EstadisticasChart } from '../components/EstadisticasChart';
+
+type Tab = 'resumen' | 'evaluaciones' | 'actividades' | 'encuestas' | 'emocional' | 'estadisticas';
 
 const TABS: { key: Tab; label: string; icon: LucideIcon }[] = [
   { key: 'resumen', label: 'Resumen', icon: LayoutGrid },
-  { key: 'evaluaciones', label: 'Evaluaciones', icon: BarChart3 },
+  { key: 'emocional', label: 'Registro Emocional', icon: Heart },
+  { key: 'estadisticas', label: 'Estadísticas', icon: BarChart3 },
+  { key: 'evaluaciones', label: 'Evaluaciones', icon: History },
   { key: 'actividades', label: 'Actividades', icon: Activity },
   { key: 'encuestas', label: 'Encuestas', icon: ClipboardList },
 ];
@@ -163,6 +169,14 @@ export default function PacienteDetailPage() {
   function renderContenido() {
     if (tabLoading) return <LoadingSpinner />;
     if (error) return <ErrorState message={error} onRetry={() => cambiarTab(tab)} />;
+
+    if (tab === 'emocional') {
+      return <RegistrosEmocional pacienteId={estudianteId} />;
+    }
+
+    if (tab === 'estadisticas') {
+      return <EstadisticasChart pacienteId={estudianteId} />;
+    }
 
     if (tab === 'evaluaciones') {
       const items = evaluaciones ?? [];
@@ -371,11 +385,19 @@ export default function PacienteDetailPage() {
         <Card>
           <h3 className="font-semibold text-text-primary mb-4">Acciones rapidas</h3>
           <div className="space-y-2">
-            <Button variant="ghost" className="w-full justify-start">
+            <Button
+              variant="ghost"
+              className="w-full justify-start"
+              onClick={() => cambiarTab('estadisticas')}
+            >
               <BarChart3 size={18} />
               Estadisticas emocionales
             </Button>
-            <Button variant="ghost" className="w-full justify-start">
+            <Button
+              variant="ghost"
+              className="w-full justify-start"
+              onClick={() => cambiarTab('emocional')}
+            >
               <Activity size={18} />
               Registro emocional
             </Button>
@@ -408,12 +430,12 @@ export default function PacienteDetailPage() {
         </div>
       </div>
 
-      <div className="flex gap-2 mb-6 border-b border-gray-100">
+      <div className="flex gap-2 mb-6 border-b border-gray-100 overflow-x-auto">
         {TABS.map((t) => (
           <button
             key={t.key}
             onClick={() => cambiarTab(t.key)}
-            className={`flex items-center gap-2 px-4 py-2 -mb-px border-b-2 text-sm font-medium cursor-pointer transition-colors ${
+            className={`flex items-center gap-2 px-4 py-2 -mb-px border-b-2 text-sm font-medium cursor-pointer transition-colors whitespace-nowrap ${
               tab === t.key
                 ? 'border-primary text-primary'
                 : 'border-transparent text-text-secondary hover:text-text-primary'
