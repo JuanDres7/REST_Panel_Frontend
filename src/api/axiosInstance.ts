@@ -23,8 +23,9 @@ api.interceptors.response.use(
       window.location.href = '/login';
     }
     if (error.response?.status === 403) {
-      useAuthStore.getState().logout();
-      window.location.href = '/acceso-denegado';
+      // 403 significa falta de permiso sobre un recurso específico,
+      // NO sesión inválida — no se debe hacer logout ni borrar el token.
+      // El componente que realizó la petición maneja este caso internamente.
     }
     return Promise.reject(error);
   }

@@ -6,15 +6,22 @@ export function useChatSocket(chatId: number | null, token: string) {
   const socketRef = useRef<ReturnType<typeof createSocket> | null>(null);
   const messageListenersRef = useRef<((msg: SocketMessage) => void)[]>([]);
   const typingListenersRef = useRef<((payload: TypingPayload) => void)[]>([]);
-  const [status, setStatus] = useState<SocketConnectionStatus>(chatId && token ? 'connecting' : 'disconnected');
+  const [status, setStatus] = useState<SocketConnectionStatus>(
+    chatId && (token || localStorage.getItem('token')) ? 'connecting' : 'disconnected'
+  );
 
   useEffect(() => {
-    if (!chatId || !token) {
+    // Leer el token directamente de localStorage como fallback para evitar
+    // race conditions cuando el prop `token` llega vacío en el primer render
+    // (e.g. hidratación de Zustand todavía en proceso).
+    const effectiveToken = token || localStorage.getItem('token') || '';
+
+    if (!chatId || !effectiveToken) {
       return;
     }
 
     setStatus('connecting');
-    const socket = createSocket(token);
+    const socket = createSocket(effectiveToken);
     socketRef.current = socket;
 
     socket.on('connect', () => {
