@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User } from 'lucide-react';
+import { User, MessageCircle } from 'lucide-react';
 import { Header } from '../../../components/layout/Header';
-import { Card, Badge } from '../../../components/ui';
+import { Card, Badge, Button } from '../../../components/ui';
 import { LoadingSpinner, ErrorState, EmptyState } from '../../../components/shared';
 import { pacientesApi } from '../../../api';
 import type { EstudianteResumen } from '../../../types';
@@ -51,9 +51,11 @@ export default function PacientesPage() {
             <Card
               key={p.id}
               className="cursor-pointer hover:shadow-md transition-shadow"
-              onClick={() => navigate(`/pacientes/${p.id}`)}
             >
-              <div className="flex items-center gap-4">
+              <div
+                className="flex items-center gap-4"
+                onClick={() => navigate(`/pacientes/${p.id}`)}
+              >
                 <div className="w-14 h-14 rounded-full bg-primary-light flex items-center justify-center">
                   <User className="text-primary" size={28} />
                 </div>
@@ -74,6 +76,16 @@ export default function PacientesPage() {
                     </p>
                   )}
                 </div>
+                <Button
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/chat/${p.id}`);
+                  }}
+                >
+                  <MessageCircle size={16} />
+                  Chat
+                </Button>
               </div>
             </Card>
           ))}
