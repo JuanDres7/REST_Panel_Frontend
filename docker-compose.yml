@@ -3,7 +3,6 @@ services:
     build:
       context: .
       args:
-        APP_ENV: ${APP_ENV:?APP_ENV is required}
         VITE_API_URL: ${VITE_API_URL:?VITE_API_URL is required}
     restart: unless-stopped
     ports:
