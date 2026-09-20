@@ -1,10 +1,25 @@
-# React + TypeScript + Vite
+# REST Panel Frontend
 
-## Configuracion del entorno
+Panel web construido con React, TypeScript y Vite.
 
-El Panel selecciona dinamicamente su API. `VITE_API_URL`, cuando se
-proporciona, tiene prioridad sobre `VITE_API_ENV`. Sin variables usa el backend
-local.
+## 1) Requisitos e instalacion
+
+- Node.js 24
+- npm
+- Docker y Docker Compose para ejecución contenerizada
+
+```bash
+npm install
+```
+
+## 2) Seleccion de API
+
+El Panel selecciona dinamicamente la API. El orden de prioridad es:
+
+1. `VITE_API_URL`, si se proporciona una URL explicita.
+2. `VITE_API_ENV`, si se proporciona un entorno.
+3. Modo de Vite (`test`, `production` o `university`).
+4. `local` cuando no se proporciona nada.
 
 | Entorno | URL |
 |---|---|
@@ -13,110 +28,124 @@ local.
 | `production` | `https://api.restapp.site` |
 | `university` | `http://179.197.239.216:3000` |
 
-## Ejecutar localmente
-
-Backend local, que es el comportamiento predeterminado:
+## 3) Ejecutar desde la terminal
 
 ```bash
+# Backend local (predeterminado)
 npm run dev
-```
 
-APIs remotas:
-
-```bash
+# API de pruebas
 npm run dev:test
+
+# API de produccion
 npm run dev:production
+
+# API de la universidad
 npm run dev:university
 ```
 
-Abre `http://localhost:5173`. Para generar los builds:
+El Panel queda disponible en `http://localhost:5173`.
+
+## 4) Construir el Panel
 
 ```bash
+# Build conectado al backend local
 npm run build
+
+# Build conectado a pruebas
 npm run build:test
+
+# Build conectado a produccion
 npm run build:production
+
+# Build conectado a la universidad
 npm run build:university
 ```
 
-## Ejecutar en contenedor
+Los archivos generados quedan en `dist/`.
+
+## 5) Ejecutar con Docker
 
 El contenedor publica el Panel en `http://localhost:8080`. En PowerShell:
 
-```powershell
-# Local (predeterminado)
-docker compose -p rest-panel up -d --build --force-recreate
+### Backend local
 
-# Pruebas
+```powershell
+$env:VITE_API_ENV = "local"
+$env:VITE_API_URL = ""
+docker compose -p rest-panel up -d --build --force-recreate
+```
+
+### API de pruebas
+
+```powershell
 $env:VITE_API_ENV = "test"
 $env:VITE_API_URL = ""
 docker compose -p rest-panel up -d --build --force-recreate
+```
 
-# Produccion
+### API de produccion
+
+```powershell
 $env:VITE_API_ENV = "production"
 $env:VITE_API_URL = ""
 docker compose -p rest-panel up -d --build --force-recreate
+```
 
-# Universidad
+### API de la universidad
+
+```powershell
 $env:VITE_API_ENV = "university"
 $env:VITE_API_URL = ""
 docker compose -p rest-panel up -d --build --force-recreate
+```
 
+Limpiar las variables de la terminal:
+
+```powershell
 Remove-Item Env:VITE_API_ENV -ErrorAction SilentlyContinue
 Remove-Item Env:VITE_API_URL -ErrorAction SilentlyContinue
 ```
 
-Para desarrollo con el codigo montado como volumen:
+Ver logs y detener el contenedor:
+
+```powershell
+docker compose -p rest-panel logs -f admin
+docker compose -p rest-panel down
+```
+
+## 6) Desarrollo con Docker y volumen
+
+El codigo se monta como volumen y Vite detecta los cambios:
 
 ```powershell
 docker compose -p rest-panel-dev -f docker-compose.dev.yml up -d
 ```
 
-Abre `http://localhost:5173`. Vite detecta cambios de archivos y cambios de
-rama sin ejecutar `docker build`.
-
-Si una rama cambia `package.json` o `package-lock.json`, reinicia el servicio para volver a ejecutar `npm ci`:
+Para reiniciar después de cambiar dependencias:
 
 ```powershell
 docker compose -p rest-panel-dev -f docker-compose.dev.yml restart admin
 ```
 
-Detener desarrollo:
+Para detenerlo:
 
 ```powershell
 docker compose -p rest-panel-dev -f docker-compose.dev.yml down
 ```
 
-`VITE_API_ENV` admite `local`, `test`, `production` y `university`.
-`VITE_API_URL` es opcional y siempre tiene prioridad. Las URLs publicas de una
-API son visibles en el navegador y no deben considerarse secretos.
+## 7) URL personalizada
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+`VITE_API_URL` siempre tiene prioridad sobre el entorno seleccionado:
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```powershell
+$env:VITE_API_URL = "http://192.168.1.100:3000"
+npm run dev
+Remove-Item Env:VITE_API_URL
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## 8) Seguridad
+
+Las URLs de una API consumida por el navegador son publicas y no deben tratarse
+como secretos. No guardes contraseñas, tokens ni llaves privadas en variables
+que comiencen por `VITE_`, porque Vite las incorpora al frontend compilado.
