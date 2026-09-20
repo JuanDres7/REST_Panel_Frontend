@@ -5,9 +5,9 @@ services:
     command:
       - sh
       - -c
-      - npm ci && npm run dev:test -- --host 0.0.0.0
+      - npm ci && npm run dev -- --host 0.0.0.0
     environment:
-      VITE_API_URL: https://api-test.restapp.site
+      VITE_API_URL: ${VITE_API_URL:?VITE_API_URL is required}
       CHOKIDAR_USEPOLLING: "true"
     ports:
       - "${ADMIN_DEV_HOST_PORT:-5173}:5173"

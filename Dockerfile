@@ -8,10 +8,11 @@ RUN npm ci
 
 COPY . .
 
-ARG APP_ENV=test
-ARG VITE_API_URL=https://api-test.restapp.site
+ARG APP_ENV
+ARG VITE_API_URL
+RUN test -n "$APP_ENV" && test -n "$VITE_API_URL"
 ENV VITE_API_URL=${VITE_API_URL}
-RUN if [ "$APP_ENV" = "test" ]; then npm run build:test; else npm run build; fi
+RUN if [ "$APP_ENV" = "local" ]; then npm run build:local; elif [ "$APP_ENV" = "test" ]; then npm run build:test; else npm run build; fi
 
 FROM nginx:1.28-alpine
 

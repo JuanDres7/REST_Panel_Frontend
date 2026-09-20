@@ -2,17 +2,21 @@
 
 ## Entornos de API
 
-El Panel utiliza `VITE_API_URL` como unica fuente para Axios y Socket.IO.
+El Panel utiliza exclusivamente `VITE_API_URL`. Vite carga el archivo del modo
+seleccionado y falla al iniciar o compilar si la variable no existe.
 
 ```bash
-# Panel local conectado al entorno de pruebas del VPS
+# Backend local (predeterminado)
 npm run dev
 
-# Equivalente explicito
+# Backend de pruebas
 npm run dev:test
 
-# Panel local conectado a produccion
+# Backend de produccion
 npm run dev:production
+
+# Build local
+npm run build:local
 
 # Build de pruebas
 npm run build:test
@@ -23,31 +27,44 @@ npm run build
 
 | Entorno | API |
 |---|---|
+| `local` | `http://localhost:3000` |
 | `test` | `https://api-test.restapp.site` |
 | `production` | `https://api.restapp.site` |
 
-`localhost` no es un tercer entorno. Si tambien se ejecuta el backend en el equipo local, crea `.env.test.local` (no versionado); Vite lo usara como sobrescritura personal del entorno `test`:
+Los modos corresponden a estos archivos:
 
-```dotenv
-VITE_API_URL=http://localhost:3000
-```
+- `npm run dev` / `npm run dev:local`: `.env.development`
+- `npm run dev:test`: `.env.test`
+- `npm run dev:production`: `.env.production`
+
+Una URL distinta puede inyectarse explícitamente en `VITE_API_URL` sin cambiar
+el codigo. La URL publica de una API siempre sera visible en el navegador y no
+debe considerarse un secreto.
 
 ## Contenedor local
 
-Por defecto el contenedor consume el entorno `test` y publica el Panel en `http://localhost:8080`:
+El mismo frontend local puede conectarse a cualquiera de los tres entornos. El
+contenedor publica el Panel en `http://localhost:8080`:
 
-```bash
-docker compose up -d --build
+```powershell
+# Backend local
+docker compose --env-file .env.development -p rest-panel-local up -d --build
+
+# Backend de pruebas
+docker compose --env-file .env.test -p rest-panel-test up -d --build
+
+# Backend de produccion
+docker compose --env-file .env.production -p rest-panel-production up -d --build
 ```
 
-`APP_ENV` y `VITE_API_URL` pueden sobrescribirse al construir. Una URL local es solamente una opcion de desarrollo, no un tercer entorno.
+`APP_ENV` y `VITE_API_URL` son obligatorias para Docker.
 
 ## Desarrollo de ramas test con volumen
 
-Para `develop` y `feature/*`, usa Vite dentro de Docker con el codigo montado como volumen y la API fija de pruebas:
+Para desarrollo local con el codigo montado como volumen:
 
 ```powershell
-docker compose -p rest-panel-dev -f docker-compose.dev.yml up -d
+docker compose --env-file .env.development -p rest-panel-dev -f docker-compose.dev.yml up -d
 ```
 
 Abre `http://localhost:5173`. Vite detecta cambios de archivos y cambios de rama sin ejecutar `docker build`.
@@ -56,16 +73,6 @@ Si una rama cambia `package.json` o `package-lock.json`, reinicia el servicio pa
 
 ```powershell
 docker compose -p rest-panel-dev -f docker-compose.dev.yml restart admin
-```
-
-Para validar `main` contra produccion, construye la imagen release:
-
-```powershell
-$env:APP_ENV = "production"
-$env:VITE_API_URL = "https://api.restapp.site"
-docker compose -p rest-panel-release up -d --build
-Remove-Item Env:APP_ENV
-Remove-Item Env:VITE_API_URL
 ```
 
 Detener desarrollo:

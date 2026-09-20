@@ -4,10 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --mode test",
+    "dev": "vite",
+    "dev:local": "vite --mode development",
     "dev:test": "vite --mode test",
     "dev:production": "vite --mode production",
     "build": "tsc -b && vite build --mode production",
+    "build:local": "tsc -b && vite build --mode development",
     "build:test": "tsc -b && vite build --mode test",
     "lint": "oxlint",
     "preview": "vite preview"
