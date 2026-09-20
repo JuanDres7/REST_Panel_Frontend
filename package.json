@@ -5,13 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:test": "vite --mode test",
-    "dev:production": "vite --mode production",
-    "dev:university": "vite --mode university",
-    "build": "tsc -b && vite build --mode development",
-    "build:test": "tsc -b && vite build --mode test",
-    "build:production": "tsc -b && vite build --mode production",
-    "build:university": "tsc -b && vite build --mode university",
+    "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview"
   },
