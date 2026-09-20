@@ -67,21 +67,30 @@ export default function SolicitudesPage() {
         <div className="space-y-4">
           {solicitudes.map((solicitud) => (
             <Card key={solicitud.id}>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-6 flex-wrap">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-primary-light flex items-center justify-center">
                     <User className="text-primary" size={24} />
                   </div>
                   <div>
                     <p className="font-semibold text-text-primary">
-                      {solicitud.estudiante?.nombres} {solicitud.estudiante?.apellidos}
+                      {solicitud.estudiante
+                        ? `${solicitud.estudiante.nombres} ${solicitud.estudiante.apellidos}`
+                        : `Estudiante #${solicitud.estudiante_id}`}
                     </p>
-                    <p className="text-sm text-text-secondary">{solicitud.estudiante?.correo}</p>
-                    {solicitud.mensaje && (
-                      <p className="text-sm text-text-muted mt-1 italic">&quot;{solicitud.mensaje}&quot;</p>
+                    {solicitud.estudiante?.correo && (
+                      <p className="text-sm text-text-secondary">{solicitud.estudiante.correo}</p>
                     )}
+                    <p className="text-sm text-text-muted mt-1">
+                      Solicitud #{solicitud.id} · Estado: {solicitud.estado}
+                    </p>
+                    <p className="text-sm text-text-secondary mt-2">
+                      {solicitud.mensaje?.trim()
+                        ? `Mensaje: ${solicitud.mensaje}`
+                        : 'El estudiante no agrego un mensaje (dato opcional).'}
+                    </p>
                     <p className="text-xs text-text-muted mt-1">
-                      {new Date(solicitud.solicitado_en).toLocaleDateString('es-CO')}
+                      Enviada: {new Date(solicitud.solicitado_en).toLocaleString('es-CO')}
                     </p>
                   </div>
                 </div>
@@ -96,6 +105,7 @@ export default function SolicitudesPage() {
                     className="text-semaforo-verde hover:bg-green-50"
                   >
                     <CheckCircle size={18} />
+                    Aceptar
                   </Button>
                   <Button
                     variant="ghost"
@@ -105,6 +115,7 @@ export default function SolicitudesPage() {
                     className="text-coral hover:bg-coral-light"
                   >
                     <XCircle size={18} />
+                    Rechazar
                   </Button>
                 </div>
               </div>

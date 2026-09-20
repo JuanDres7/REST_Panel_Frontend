@@ -29,3 +29,11 @@ export interface SocketMessage {
   mensaje: string;
   enviado_en: string;
 }
+
+export interface TypingPayload {
+  chatId: number;
+  userId?: number;
+  isTyping: boolean;
+}
+
+export type SocketConnectionStatus = 'connecting' | 'connected' | 'disconnected' | 'error';

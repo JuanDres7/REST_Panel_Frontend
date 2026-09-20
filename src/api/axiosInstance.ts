@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_URL } from './apiConfig';
+import { useAuthStore } from '../features/auth/store/authStore';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -18,12 +19,13 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      useAuthStore.getState().logout();
       window.location.href = '/login';
     }
     if (error.response?.status === 403) {
-      window.location.href = '/acceso-denegado';
+      // 403 significa falta de permiso sobre un recurso específico,
+      // NO sesión inválida — no se debe hacer logout ni borrar el token.
+      // El componente que realizó la petición maneja este caso internamente.
     }
     return Promise.reject(error);
   }
