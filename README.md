@@ -2,71 +2,73 @@
 
 ## Configuracion del entorno
 
-El Panel utiliza exclusivamente `VITE_API_URL` desde un unico archivo `.env`.
-El archivo real no se versiona y la aplicacion falla al iniciar o compilar si
-la variable no existe. Crealo a partir de la plantilla:
+El Panel selecciona dinamicamente su API. `VITE_API_URL`, cuando se
+proporciona, tiene prioridad sobre `VITE_API_ENV`. Sin variables usa el backend
+local.
 
-```bash
-cp .env.example .env
-```
-
-En PowerShell:
-
-```powershell
-Copy-Item .env.example .env
-```
-
-Configura el mismo `.env` según la API que quieras consumir.
-
-### Backend local
-
-```dotenv
-VITE_API_URL=http://localhost:3000
-```
-
-### API de pruebas
-
-```dotenv
-VITE_API_URL=https://api-test.restapp.site
-```
-
-### API de produccion
-
-```dotenv
-VITE_API_URL=https://api.restapp.site
-```
-
-Solo `.env.example` se guarda en Git. La URL publica de una API siempre sera
-visible en el navegador y no debe considerarse un secreto.
+| Entorno | URL |
+|---|---|
+| `local` | `http://localhost:3000` |
+| `test` | `https://api-test.restapp.site` |
+| `production` | `https://api.restapp.site` |
+| `university` | `http://179.197.239.216:3000` |
 
 ## Ejecutar localmente
 
-El comando es el mismo para cualquiera de las tres APIs; la seleccion depende
-del valor presente en `.env`:
+Backend local, que es el comportamiento predeterminado:
 
 ```bash
 npm run dev
 ```
 
-Abre `http://localhost:5173`. Para generar el build:
+APIs remotas:
+
+```bash
+npm run dev:test
+npm run dev:production
+npm run dev:university
+```
+
+Abre `http://localhost:5173`. Para generar los builds:
 
 ```bash
 npm run build
+npm run build:test
+npm run build:production
+npm run build:university
 ```
 
 ## Ejecutar en contenedor
 
-El contenedor utiliza el mismo `.env` y publica el Panel en
-`http://localhost:8080`:
+El contenedor publica el Panel en `http://localhost:8080`. En PowerShell:
 
 ```powershell
-docker compose --env-file .env -p rest-panel up -d --build
+# Local (predeterminado)
+docker compose -p rest-panel up -d --build --force-recreate
+
+# Pruebas
+$env:VITE_API_ENV = "test"
+$env:VITE_API_URL = ""
+docker compose -p rest-panel up -d --build --force-recreate
+
+# Produccion
+$env:VITE_API_ENV = "production"
+$env:VITE_API_URL = ""
+docker compose -p rest-panel up -d --build --force-recreate
+
+# Universidad
+$env:VITE_API_ENV = "university"
+$env:VITE_API_URL = ""
+docker compose -p rest-panel up -d --build --force-recreate
+
+Remove-Item Env:VITE_API_ENV -ErrorAction SilentlyContinue
+Remove-Item Env:VITE_API_URL -ErrorAction SilentlyContinue
 ```
 
 Para desarrollo con el codigo montado como volumen:
 
 ```powershell
-docker compose --env-file .env -p rest-panel-dev -f docker-compose.dev.yml up -d
+docker compose -p rest-panel-dev -f docker-compose.dev.yml up -d
 ```
 
 Abre `http://localhost:5173`. Vite detecta cambios de archivos y cambios de
@@ -75,16 +77,18 @@ rama sin ejecutar `docker build`.
 Si una rama cambia `package.json` o `package-lock.json`, reinicia el servicio para volver a ejecutar `npm ci`:
 
 ```powershell
-docker compose --env-file .env -p rest-panel-dev -f docker-compose.dev.yml restart admin
+docker compose -p rest-panel-dev -f docker-compose.dev.yml restart admin
 ```
 
 Detener desarrollo:
 
 ```powershell
-docker compose --env-file .env -p rest-panel-dev -f docker-compose.dev.yml down
+docker compose -p rest-panel-dev -f docker-compose.dev.yml down
 ```
 
-`VITE_API_URL` es obligatoria tanto para el build normal como para Docker.
+`VITE_API_ENV` admite `local`, `test`, `production` y `university`.
+`VITE_API_URL` es opcional y siempre tiene prioridad. Las URLs publicas de una
+API son visibles en el navegador y no deben considerarse secretos.
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
