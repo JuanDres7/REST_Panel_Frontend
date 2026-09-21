@@ -59,7 +59,20 @@ contenido.
 
 ## 3) Ejecutar desde la terminal
 
-Después de seleccionar la API en `.env`:
+La URL puede enviarse en el mismo comando, sin modificar `.env`:
+
+```powershell
+# Local
+$env:VITE_API_URL='http://localhost:3000'; npm run dev
+
+# Pruebas
+$env:VITE_API_URL='https://api-test.restapp.site'; npm run dev
+
+# Producción
+$env:VITE_API_URL='https://api.restapp.site'; npm run dev
+```
+
+También puedes utilizar la URL guardada en `.env`:
 
 ```bash
 npm run dev
@@ -69,7 +82,18 @@ El Panel queda disponible en `http://localhost:5173`.
 
 ## 4) Construir el Panel
 
-El build utiliza la URL presente en `.env`:
+```powershell
+# Local
+$env:VITE_API_URL='http://localhost:3000'; npm run build
+
+# Pruebas
+$env:VITE_API_URL='https://api-test.restapp.site'; npm run build
+
+# Producción
+$env:VITE_API_URL='https://api.restapp.site'; npm run build
+```
+
+Para construir utilizando el `.env` actual:
 
 ```bash
 npm run build
