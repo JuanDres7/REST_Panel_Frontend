@@ -1,55 +1,96 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Mail, Users, UserCircle, LogOut } from 'lucide-react';
+import { HeartPulse, LayoutDashboard, Library, LogOut, Mail, Users, type LucideIcon } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { ThemeToggle } from '../../features/theme/ThemeToggle';
 
-const navItems = [
-  { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/solicitudes', icon: Mail, label: 'Solicitudes' },
-  { to: '/pacientes', icon: Users, label: 'Pacientes' },
+interface NavItem {
+  to: string;
+  icon: LucideIcon;
+  label: string;
+}
+
+const secciones: { titulo: string; items: NavItem[] }[] = [
+  {
+    titulo: 'General',
+    items: [
+      { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
+      { to: '/solicitudes', icon: Mail, label: 'Solicitudes' },
+      { to: '/pacientes', icon: Users, label: 'Pacientes' },
+    ],
+  },
+  {
+    titulo: 'Herramientas',
+    items: [{ to: '/ovas', icon: Library, label: 'OVAs' }],
+  },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  /** En pantallas pequeñas el sidebar es un drawer; en lg siempre esta visible. */
+  open: boolean;
+  onNavigate: () => void;
+}
+
+export function Sidebar({ open, onNavigate }: SidebarProps) {
   const { logout, fullName } = useAuth();
+  const inicial = fullName.trim().charAt(0).toUpperCase() || 'P';
 
   return (
-    <aside className="w-64 bg-surface border-r border-gray-100 flex flex-col h-screen fixed left-0 top-0">
-      <div className="p-6 border-b border-gray-100">
-        <h1 className="text-xl font-bold text-primary">REST Panel</h1>
-        <p className="text-xs text-text-muted mt-1">Psicologo</p>
+    <aside
+      className={`fixed bottom-4 left-4 top-4 z-50 flex w-64 flex-col rounded-3xl border border-line bg-surface shadow-card transition-transform duration-300 ease-out lg:z-30 lg:translate-x-0 ${
+        open ? 'translate-x-0' : '-translate-x-[120%]'
+      }`}
+    >
+      <div className="flex items-center gap-3 px-6 pb-4 pt-6">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-on-primary shadow-md shadow-primary/25">
+          <HeartPulse size={22} />
+        </div>
+        <div>
+          <h1 className="text-lg font-bold leading-tight text-text-primary">REST</h1>
+          <p className="text-xs text-text-muted">Panel del psicologo</p>
+        </div>
       </div>
 
-      <nav className="flex-1 p-4 space-y-1">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={item.to === '/'}
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                isActive
-                  ? 'bg-primary-light text-primary'
-                  : 'text-text-secondary hover:bg-surface-elevated hover:text-text-primary'
-              }`
-            }
-          >
-            <item.icon size={20} />
-            {item.label}
-          </NavLink>
+      <nav className="flex-1 space-y-5 overflow-y-auto px-4 py-2">
+        {secciones.map((seccion) => (
+          <div key={seccion.titulo}>
+            <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-wider text-text-muted">
+              {seccion.titulo}
+            </p>
+            <div className="space-y-1">
+              {seccion.items.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.to === '/'}
+                  onClick={onNavigate}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
+                      isActive
+                        ? 'bg-primary text-on-primary shadow-md shadow-primary/25'
+                        : 'text-text-secondary hover:translate-x-0.5 hover:bg-surface-elevated hover:text-text-primary'
+                    }`
+                  }
+                >
+                  <item.icon size={20} />
+                  {item.label}
+                </NavLink>
+              ))}
+            </div>
+          </div>
         ))}
       </nav>
 
-      <div className="p-4 border-t border-gray-100">
-        <div className="flex items-center gap-3 px-3 py-2">
-          <div className="w-8 h-8 rounded-full bg-primary-light flex items-center justify-center">
-            <UserCircle size={18} className="text-primary" />
+      <div className="space-y-3 border-t border-line p-4">
+        <ThemeToggle />
+        <div className="flex items-center gap-3 px-1">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-light text-sm font-semibold text-primary">
+            {inicial}
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-text-primary truncate">{fullName}</p>
-          </div>
+          <p className="min-w-0 flex-1 truncate text-sm font-medium text-text-primary">{fullName}</p>
         </div>
         <button
           onClick={logout}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-text-secondary hover:bg-coral-light hover:text-coral transition-colors cursor-pointer"
+          className="flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-text-secondary transition-colors hover:bg-coral-light hover:text-coral"
         >
           <LogOut size={18} />
           Cerrar sesion

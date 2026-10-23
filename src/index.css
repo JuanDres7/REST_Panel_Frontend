@@ -1,34 +1,163 @@
 @import "tailwindcss";
+@import "@fontsource-variable/inter";
 
-@theme {
-  --color-primary: #3B7A87;
-  --color-primary-hover: #2E6570;
-  --color-primary-light: #E8F4F6;
+/* El modo oscuro se activa con la clase `.dark` en <html> (ver themeStore y el script de index.html). */
+@custom-variant dark (&:where(.dark, .dark *));
 
-  --color-secondary: #5B9A9A;
-  --color-secondary-light: #EBF5F5;
+/* ---------- Tokens: tema claro ---------- */
+:root {
+  color-scheme: light;
 
-  --color-coral: #E27D60;
-  --color-coral-hover: #D96B27;
-  --color-coral-light: #FDF0EC;
+  --c-primary: #3B7A87;
+  --c-primary-hover: #2E6570;
+  --c-primary-light: #E8F4F6;
+  --c-on-primary: #FFFFFF;
 
-  --color-surface: #FFFFFF;
-  --color-surface-secondary: #F5F7FA;
-  --color-surface-elevated: #F0F4F8;
+  --c-secondary: #5B9A9A;
+  --c-secondary-light: #EBF5F5;
 
-  --color-text-primary: #1E293B;
-  --color-text-secondary: #64748B;
-  --color-text-muted: #94A3B8;
+  --c-coral: #E27D60;
+  --c-coral-hover: #D96B27;
+  --c-coral-light: #FDF0EC;
 
-  --color-semaforo-verde: #4CAF93;
-  --color-semaforo-amarillo: #E9B44C;
-  --color-semaforo-rojo: #E27D60;
+  --c-surface: #FFFFFF;
+  --c-surface-secondary: #F2F5F9;
+  --c-surface-elevated: #EDF1F6;
+  --c-line: #E6EBF1;
+
+  --c-text-primary: #1E293B;
+  --c-text-secondary: #5B6B81;
+  --c-text-muted: #8493A8;
+
+  /* Relleno (barras, puntos) */
+  --c-semaforo-verde: #4CAF93;
+  --c-semaforo-amarillo: #E9B44C;
+  --c-semaforo-rojo: #E27D60;
+  /* Fondo suave y tinta para badges (contraste AA) */
+  --c-semaforo-verde-soft: #E6F5F0;
+  --c-semaforo-amarillo-soft: #FDF3DC;
+  --c-semaforo-rojo-soft: #FDECE7;
+  --c-semaforo-verde-ink: #28705B;
+  --c-semaforo-amarillo-ink: #8A6212;
+  --c-semaforo-rojo-ink: #B5482D;
+
+  --sh-card: 0 1px 2px rgb(16 40 56 / 0.04), 0 8px 24px -10px rgb(16 40 56 / 0.10);
+  --sh-card-hover: 0 2px 4px rgb(16 40 56 / 0.05), 0 18px 36px -14px rgb(16 40 56 / 0.22);
+  --sh-float: 0 24px 64px -16px rgb(16 40 56 / 0.30);
+  --overlay: rgb(15 23 42 / 0.45);
+}
+
+/* ---------- Tokens: tema oscuro ---------- */
+.dark {
+  color-scheme: dark;
+
+  --c-primary: #6BB1BF;
+  --c-primary-hover: #85C3CF;
+  --c-primary-light: #1B3A42;
+  --c-on-primary: #0B1519;
+
+  --c-secondary: #7DBDBD;
+  --c-secondary-light: #1B3436;
+
+  --c-coral: #F0937A;
+  --c-coral-hover: #F5A892;
+  --c-coral-light: #3A2420;
+
+  --c-surface: #16232A;
+  --c-surface-secondary: #0E181D;
+  --c-surface-elevated: #1D2E36;
+  --c-line: #263A44;
+
+  --c-text-primary: #E6EEF1;
+  --c-text-secondary: #A3B5BE;
+  --c-text-muted: #7C929C;
+
+  --c-semaforo-verde: #5CC4A6;
+  --c-semaforo-amarillo: #F0C766;
+  --c-semaforo-rojo: #F0937A;
+  --c-semaforo-verde-soft: #17332B;
+  --c-semaforo-amarillo-soft: #3A3016;
+  --c-semaforo-rojo-soft: #3A2320;
+  --c-semaforo-verde-ink: #6FD0B3;
+  --c-semaforo-amarillo-ink: #F0C766;
+  --c-semaforo-rojo-ink: #F0937A;
+
+  --sh-card: 0 1px 2px rgb(0 0 0 / 0.30), 0 8px 24px -10px rgb(0 0 0 / 0.45);
+  --sh-card-hover: 0 2px 4px rgb(0 0 0 / 0.35), 0 18px 36px -14px rgb(0 0 0 / 0.60);
+  --sh-float: 0 24px 64px -16px rgb(0 0 0 / 0.70);
+  --overlay: rgb(0 0 0 / 0.60);
+}
+
+/* `inline` hace que las utilidades usen var(--c-*) directamente y cambien con la clase .dark */
+@theme inline {
+  --color-primary: var(--c-primary);
+  --color-primary-hover: var(--c-primary-hover);
+  --color-primary-light: var(--c-primary-light);
+  --color-on-primary: var(--c-on-primary);
+
+  --color-secondary: var(--c-secondary);
+  --color-secondary-light: var(--c-secondary-light);
+
+  --color-coral: var(--c-coral);
+  --color-coral-hover: var(--c-coral-hover);
+  --color-coral-light: var(--c-coral-light);
+
+  --color-surface: var(--c-surface);
+  --color-surface-secondary: var(--c-surface-secondary);
+  --color-surface-elevated: var(--c-surface-elevated);
+  --color-line: var(--c-line);
+
+  --color-text-primary: var(--c-text-primary);
+  --color-text-secondary: var(--c-text-secondary);
+  --color-text-muted: var(--c-text-muted);
+
+  --color-semaforo-verde: var(--c-semaforo-verde);
+  --color-semaforo-amarillo: var(--c-semaforo-amarillo);
+  --color-semaforo-rojo: var(--c-semaforo-rojo);
+  --color-semaforo-verde-soft: var(--c-semaforo-verde-soft);
+  --color-semaforo-amarillo-soft: var(--c-semaforo-amarillo-soft);
+  --color-semaforo-rojo-soft: var(--c-semaforo-rojo-soft);
+  --color-semaforo-verde-ink: var(--c-semaforo-verde-ink);
+  --color-semaforo-amarillo-ink: var(--c-semaforo-amarillo-ink);
+  --color-semaforo-rojo-ink: var(--c-semaforo-rojo-ink);
+
+  --shadow-card: var(--sh-card);
+  --shadow-card-hover: var(--sh-card-hover);
+  --shadow-float: var(--sh-float);
+
+  --font-sans: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
 body {
   margin: 0;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  background-color: var(--color-surface-secondary);
-  color: var(--color-text-primary);
+  background-color: var(--c-surface-secondary);
+  color: var(--c-text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+::selection {
+  background-color: var(--c-primary-light);
+  color: var(--c-text-primary);
+}
+
+:focus-visible {
+  outline: 2px solid var(--c-primary);
+  outline-offset: 2px;
+}
+
+/* Scrollbars discretas */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-line) transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
 }

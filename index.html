@@ -1,10 +1,22 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>rest-panel-frontend</title>
+    <meta name="theme-color" content="#F2F5F9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0E181D" media="(prefers-color-scheme: dark)" />
+    <title>REST Panel</title>
+    <script>
+      // Aplica el tema antes de pintar para evitar el parpadeo claro -> oscuro.
+      (function () {
+        try {
+          var t = localStorage.getItem('theme') || 'system';
+          var dark = t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.classList.toggle('dark', dark);
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

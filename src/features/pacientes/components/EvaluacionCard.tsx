@@ -1,6 +1,7 @@
 import type { EvaluacionHistorial } from '../../../types';
 import { Card, Badge } from '../../../components/ui';
 import { semaforoVariant } from './nivelSemaforo';
+import { capitalizar } from '../../ovas/constants';
 import { DimensionesSemaforo } from './DimensionesSemaforo';
 
 interface EvaluacionCardProps {
@@ -9,7 +10,7 @@ interface EvaluacionCardProps {
 
 export function EvaluacionCard({ evaluacion }: EvaluacionCardProps) {
   return (
-    <Card className="mb-4">
+    <Card data-enter className="mb-4">
       <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
         <div>
           <p className="font-semibold text-text-primary">
@@ -23,7 +24,7 @@ export function EvaluacionCard({ evaluacion }: EvaluacionCardProps) {
           <span className="text-sm text-text-secondary">Puntaje:</span>
           <span className="font-medium text-text-primary">{evaluacion.puntaje_total ?? '-'}</span>
           <Badge variant={semaforoVariant(evaluacion.estado_semaforo)}>
-            {evaluacion.estado_semaforo}
+            {capitalizar(evaluacion.estado_semaforo)}
           </Badge>
         </div>
       </div>

@@ -17,3 +17,22 @@ export type {
   PreguntaEncuesta,
   EncuestaInstitucional,
 } from './panel.types';
+export type {
+  OvaTipoActividad,
+  OvaStorageSource,
+  OvaAsignacionEstado,
+  OvaDimension,
+  OvaNivel,
+  RecursoResuelto,
+  OvaRegla,
+  Ova,
+  OvaDetalle,
+  OvaPayload,
+  OvaFiltros,
+  ReglaPayload,
+  ArchivoSubido,
+  OvaResumenEfectividad,
+  OvaDesgloseEfectividad,
+  OvaEfectividad,
+  OvaAsignacionPaciente,
+} from './ova.types';

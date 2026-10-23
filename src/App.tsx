@@ -9,6 +9,9 @@ import PacientesPage from './features/pacientes/pages/PacientesPage';
 import PacienteDetailPage from './features/pacientes/pages/PacienteDetailPage';
 import ChatPage from './features/chat/pages/ChatPage';
 import PerfilPage from './features/perfil/pages/PerfilPage';
+import OvasPage from './features/ovas/pages/OvasPage';
+import OvaDetailPage from './features/ovas/pages/OvaDetailPage';
+import OvaEfectividadPage from './features/ovas/pages/OvaEfectividadPage';
 
 export default function App() {
   return (
@@ -22,6 +25,9 @@ export default function App() {
           <Route path="/solicitudes" element={<SolicitudesPage />} />
           <Route path="/pacientes" element={<PacientesPage />} />
           <Route path="/pacientes/:id" element={<PacienteDetailPage />} />
+          <Route path="/ovas" element={<OvasPage />} />
+          <Route path="/ovas/efectividad" element={<OvaEfectividadPage />} />
+          <Route path="/ovas/:id" element={<OvaDetailPage />} />
           <Route path="/chat/:estudianteId" element={<ChatPage />} />
           <Route path="/perfil" element={<PerfilPage />} />
         </Route>

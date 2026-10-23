@@ -11,6 +11,7 @@ import {
   ShieldOff,
   CheckCircle2,
   Heart,
+  Library,
   type LucideIcon,
 } from 'lucide-react';
 import { Header } from '../../../components/layout/Header';
@@ -28,11 +29,14 @@ import type {
 import { EvaluacionCard } from '../components/EvaluacionCard';
 import { DimensionesSemaforo } from '../components/DimensionesSemaforo';
 import { semaforoVariant } from '../components/nivelSemaforo';
+import { useEntranceRef } from '../../../hooks/useEntrance';
+import { capitalizar } from '../../ovas/constants';
 
 import { RegistrosEmocional } from '../components/RegistrosEmocional';
 import { EstadisticasChart } from '../components/EstadisticasChart';
+import { OvasPaciente } from '../components/OvasPaciente';
 
-type Tab = 'resumen' | 'evaluaciones' | 'actividades' | 'encuestas' | 'emocional' | 'estadisticas';
+type Tab = 'resumen' | 'evaluaciones' | 'actividades' | 'encuestas' | 'emocional' | 'estadisticas' | 'ovas';
 
 const TABS: { key: Tab; label: string; icon: LucideIcon }[] = [
   { key: 'resumen', label: 'Resumen', icon: LayoutGrid },
@@ -41,6 +45,7 @@ const TABS: { key: Tab; label: string; icon: LucideIcon }[] = [
   { key: 'evaluaciones', label: 'Evaluaciones', icon: History },
   { key: 'actividades', label: 'Actividades', icon: Activity },
   { key: 'encuestas', label: 'Encuestas', icon: ClipboardList },
+  { key: 'ovas', label: 'OVAs', icon: Library },
 ];
 
 function formatearRespuesta(respuesta: string): string {
@@ -66,6 +71,10 @@ export default function PacienteDetailPage() {
   const [tabLoading, setTabLoading] = useState(false);
   const [error, setError] = useState('');
   const [accesoDenegado, setAccesoDenegado] = useState(false);
+  const ref = useEntranceRef<HTMLDivElement>({
+    ready: !loadingResumen && !!resumen,
+    trigger: `${tab}-${tabLoading}`,
+  });
 
   useEffect(() => {
     loadResumen();
@@ -196,6 +205,10 @@ export default function PacienteDetailPage() {
       return <EstadisticasChart pacienteId={estudianteId} />;
     }
 
+    if (tab === 'ovas') {
+      return <OvasPaciente pacienteId={estudianteId} />;
+    }
+
     if (tab === 'evaluaciones') {
       const items = evaluaciones ?? [];
       if (items.length === 0) {
@@ -230,7 +243,7 @@ export default function PacienteDetailPage() {
       return (
         <div className="space-y-3">
           {items.map((a) => (
-            <Card key={a.id} className="flex items-center gap-4">
+            <Card key={a.id} data-enter className="flex items-center gap-4">
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-text-primary truncate">
                   {a.opcion?.nombre ?? 'Actividad'}
@@ -268,7 +281,7 @@ export default function PacienteDetailPage() {
       return (
         <div className="space-y-3">
           {items.map((r) => (
-            <Card key={r.id}>
+            <Card key={r.id} data-enter>
               <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
                 <p className="font-semibold text-text-primary">
                   {r.encuesta?.titulo ?? 'Encuesta'}
@@ -292,7 +305,7 @@ export default function PacienteDetailPage() {
                       ).find((item) => item.id === respuesta.pregunta_id);
                       const maximo = pregunta?.escala?.split('-').at(-1);
                       return (
-                        <li key={`${r.id}-${respuesta.pregunta_id}`} className="rounded-md bg-white p-3">
+                        <li key={`${r.id}-${respuesta.pregunta_id}`} className="rounded-xl bg-surface p-3">
                           <div className="flex items-start justify-between gap-3">
                             <p className="text-sm text-text-primary">
                               <span className="font-semibold">{index + 1}. </span>
@@ -323,7 +336,7 @@ export default function PacienteDetailPage() {
 
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+        <Card data-enter>
           <h3 className="font-semibold text-text-primary mb-4">Datos del estudiante</h3>
           <dl className="space-y-3 text-sm">
             <div className="flex justify-between">
@@ -361,14 +374,14 @@ export default function PacienteDetailPage() {
           </dl>
         </Card>
 
-        <Card>
+        <Card data-enter>
           <h3 className="font-semibold text-text-primary mb-4">Ultima evaluacion</h3>
           {ultimaEvaluacion ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Badge variant={semaforoVariant(ultimaEvaluacion.estado_semaforo)}>
-                    {ultimaEvaluacion.estado_semaforo}
+                    {capitalizar(ultimaEvaluacion.estado_semaforo)}
                   </Badge>
                   <span className="text-sm font-medium text-text-primary">
                     {ultimaEvaluacion.puntaje_total ?? '-'}
@@ -394,7 +407,7 @@ export default function PacienteDetailPage() {
           )}
         </Card>
 
-        <Card>
+        <Card data-enter>
           <h3 className="font-semibold text-text-primary mb-4">Actividades vigentes</h3>
           {resumenCargado.actividades_vigentes.length === 0 ? (
             <p className="text-sm text-text-muted">Sin actividades vigentes</p>
@@ -428,7 +441,7 @@ export default function PacienteDetailPage() {
           )}
         </Card>
 
-        <Card>
+        <Card data-enter>
           <h3 className="font-semibold text-text-primary mb-4">Acciones rapidas</h3>
           <div className="space-y-2">
             <Button
@@ -454,11 +467,12 @@ export default function PacienteDetailPage() {
   }
 
   return (
-    <div>
-      <div className="flex items-center gap-4 mb-6">
+    <div ref={ref}>
+      <div className="flex items-start gap-4">
         <button
           onClick={() => navigate('/pacientes')}
-          className="text-text-secondary hover:text-text-primary cursor-pointer"
+          aria-label="Volver a pacientes"
+          className="mt-1.5 cursor-pointer rounded-lg p-1 text-text-secondary transition-colors hover:bg-surface-elevated hover:text-text-primary"
         >
           <ArrowLeft size={24} />
         </button>
@@ -476,15 +490,15 @@ export default function PacienteDetailPage() {
         </div>
       </div>
 
-      <div className="flex gap-2 mb-6 border-b border-gray-100 overflow-x-auto">
+      <div data-enter className="mb-6 flex gap-1 overflow-x-auto rounded-2xl border border-line bg-surface p-1.5 shadow-card">
         {TABS.map((t) => (
           <button
             key={t.key}
             onClick={() => cambiarTab(t.key)}
-            className={`flex items-center gap-2 px-4 py-2 -mb-px border-b-2 text-sm font-medium cursor-pointer transition-colors whitespace-nowrap ${
+            className={`flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 ${
               tab === t.key
-                ? 'border-primary text-primary'
-                : 'border-transparent text-text-secondary hover:text-text-primary'
+                ? 'bg-primary text-on-primary shadow-md shadow-primary/25'
+                : 'text-text-secondary hover:bg-surface-elevated hover:text-text-primary'
             }`}
           >
             <t.icon size={16} />

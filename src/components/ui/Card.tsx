@@ -1,10 +1,10 @@
-import type { ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 
-interface CardProps {
+interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   children: ReactNode;
-  className?: string;
   padding?: 'sm' | 'md' | 'lg';
-  onClick?: () => void;
+  /** Eleva la tarjeta al pasar el mouse. Usar cuando la tarjeta es clicable. */
+  interactive?: boolean;
 }
 
 const paddings = {
@@ -13,11 +13,15 @@ const paddings = {
   lg: 'p-8',
 };
 
-export function Card({ children, className = '', padding = 'md', onClick }: CardProps) {
+export function Card({ children, className = '', padding = 'md', interactive = false, ...props }: CardProps) {
+  const hover = interactive
+    ? 'cursor-pointer transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-card-hover'
+    : '';
+
   return (
     <div
-      className={`bg-surface rounded-xl border border-gray-100 shadow-sm ${paddings[padding]} ${className}`}
-      onClick={onClick}
+      className={`rounded-2xl border border-line bg-surface shadow-card ${hover} ${paddings[padding]} ${className}`}
+      {...props}
     >
       {children}
     </div>

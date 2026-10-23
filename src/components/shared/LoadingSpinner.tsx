@@ -1,8 +1,8 @@
 export function LoadingSpinner({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
-  const sizes = { sm: 'h-4 w-4', md: 'h-8 w-8', lg: 'h-12 w-12' };
+  const sizes = { sm: 'h-4 w-4 border-2', md: 'h-8 w-8 border-[3px]', lg: 'h-12 w-12 border-4' };
   return (
-    <div className="flex items-center justify-center p-8">
-      <div className={`${sizes[size]} animate-spin rounded-full border-4 border-gray-200 border-t-primary`} />
+    <div className="flex items-center justify-center p-8" role="status" aria-label="Cargando">
+      <div className={`${sizes[size]} animate-spin rounded-full border-line border-t-primary`} />
     </div>
   );
 }

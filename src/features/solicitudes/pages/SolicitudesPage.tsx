@@ -5,12 +5,14 @@ import { Card, Button, Badge } from '../../../components/ui';
 import { LoadingSpinner, ErrorState, EmptyState } from '../../../components/shared';
 import { asignacionesApi } from '../../../api';
 import type { SolicitudConEstudiante } from '../../../types';
+import { useEntranceRef } from '../../../hooks/useEntrance';
 
 export default function SolicitudesPage() {
   const [solicitudes, setSolicitudes] = useState<SolicitudConEstudiante[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [processingId, setProcessingId] = useState<number | null>(null);
+  const ref = useEntranceRef<HTMLDivElement>({ ready: !loading && !error });
 
   useEffect(() => { loadSolicitudes(); }, []);
 
@@ -54,7 +56,7 @@ export default function SolicitudesPage() {
   if (error) return <ErrorState message={error} onRetry={loadSolicitudes} />;
 
   return (
-    <div>
+    <div ref={ref}>
       <Header title="Solicitudes" subtitle="Solicitudes pendientes de revision" />
 
       {solicitudes.length === 0 ? (
@@ -66,10 +68,14 @@ export default function SolicitudesPage() {
       ) : (
         <div className="space-y-4">
           {solicitudes.map((solicitud) => (
-            <Card key={solicitud.id}>
-              <div className="flex items-center justify-between gap-6 flex-wrap">
+            <Card
+              key={solicitud.id}
+              data-enter
+              className="transition-shadow duration-200 hover:shadow-card-hover"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-primary-light flex items-center justify-center">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary-light">
                     <User className="text-primary" size={24} />
                   </div>
                   <div>
@@ -81,15 +87,15 @@ export default function SolicitudesPage() {
                     {solicitud.estudiante?.correo && (
                       <p className="text-sm text-text-secondary">{solicitud.estudiante.correo}</p>
                     )}
-                    <p className="text-sm text-text-muted mt-1">
+                    <p className="mt-1 text-sm text-text-muted">
                       Solicitud #{solicitud.id} · Estado: {solicitud.estado}
                     </p>
-                    <p className="text-sm text-text-secondary mt-2">
+                    <p className="mt-2 text-sm text-text-secondary">
                       {solicitud.mensaje?.trim()
                         ? `Mensaje: ${solicitud.mensaje}`
                         : 'El estudiante no agrego un mensaje (dato opcional).'}
                     </p>
-                    <p className="text-xs text-text-muted mt-1">
+                    <p className="mt-1 text-xs text-text-muted">
                       Enviada: {new Date(solicitud.solicitado_en).toLocaleString('es-CO')}
                     </p>
                   </div>
@@ -102,7 +108,7 @@ export default function SolicitudesPage() {
                     size="sm"
                     onClick={() => handleAprobar(solicitud.id)}
                     disabled={processingId === solicitud.id}
-                    className="text-semaforo-verde hover:bg-green-50"
+                    className="text-semaforo-verde-ink hover:bg-semaforo-verde-soft"
                   >
                     <CheckCircle size={18} />
                     Aceptar

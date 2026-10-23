@@ -1,6 +1,7 @@
 import type { DimensionSemaforo } from '../../../types';
 import { Badge } from '../../../components/ui';
 import { semaforoBarClass, semaforoVariant } from './nivelSemaforo';
+import { capitalizar } from '../../ovas/constants';
 
 const DIMENSION_LABELS: Record<string, string> = {
   ansiedad: 'Ansiedad',
@@ -45,12 +46,12 @@ export function DimensionesSemaforo({ dimensiones }: DimensionesSemaforoProps) {
             <span className="text-text-secondary">{DIMENSION_LABELS[d.dimension] ?? d.dimension}</span>
             <span className="flex items-center gap-2">
               <span className="font-medium text-text-primary">{d.puntaje}</span>
-              <Badge variant={semaforoVariant(d.nivel)}>{d.nivel}</Badge>
+              <Badge variant={semaforoVariant(d.nivel)}>{capitalizar(d.nivel)}</Badge>
             </span>
           </div>
           <div className="h-2 rounded-full bg-surface-elevated overflow-hidden">
             <div
-              className={`h-full rounded-full ${semaforoBarClass(d.nivel)}`}
+              className={`h-full rounded-full transition-[width] duration-500 ${semaforoBarClass(d.nivel)}`}
               style={{ width: `${Math.min(Math.max(d.puntaje, 0), 100)}%` }}
             />
           </div>

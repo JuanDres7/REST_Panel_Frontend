@@ -5,6 +5,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import { useChatSocket } from '../../../hooks/useChatSocket';
 import { chatApi, pacientesApi } from '../../../api';
 import { Card } from '../../../components/ui';
+import { fieldClass } from '../../../components/ui/field';
 import { LoadingSpinner, ErrorState } from '../../../components/shared';
 import type { Mensaje, SocketMessage, PerfilEstudiante } from '../../../types';
 
@@ -136,8 +137,10 @@ export default function ChatPage() {
 
   if (forbidden) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] text-center">
-        <ShieldOff className="h-12 w-12 text-coral mb-4" />
+      <div className="flex flex-col items-center justify-center h-[calc(100dvh-5.75rem)] lg:h-[calc(100dvh-4rem)] text-center">
+        <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-coral-light">
+          <ShieldOff className="h-10 w-10 text-coral" />
+        </div>
         <p className="text-text-primary font-medium mb-1">No tienes acceso a este estudiante</p>
         <p className="text-text-secondary text-sm mb-4">
           Solo puedes chatear con estudiantes que tengas asignados y aprobados.
@@ -155,11 +158,17 @@ export default function ChatPage() {
   const nombreEstudiante = estudiante ? `${estudiante.nombres} ${estudiante.apellidos}` : 'estudiante';
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)]">
+    <div className="flex flex-col h-[calc(100dvh-5.75rem)] lg:h-[calc(100dvh-4rem)]">
       <div className="flex items-center gap-4 mb-4">
-        <ArrowLeft size={24} className="text-text-secondary cursor-pointer" onClick={() => navigate(-1)} />
+        <button
+          onClick={() => navigate(-1)}
+          aria-label="Volver"
+          className="cursor-pointer rounded-lg p-1 text-text-secondary transition-colors hover:bg-surface-elevated hover:text-text-primary"
+        >
+          <ArrowLeft size={24} />
+        </button>
         <div className="flex-1">
-          <h2 className="text-lg font-semibold text-text-primary">Chat con {nombreEstudiante}</h2>
+          <h2 className="text-xl font-semibold tracking-tight text-text-primary">Chat con {nombreEstudiante}</h2>
           <p className="text-xs text-text-muted flex items-center gap-1.5 mt-0.5">
             {status === 'connecting' && (
               <>
@@ -192,12 +201,14 @@ export default function ChatPage() {
             return (
               <div key={msg.id} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
                 <div
-                  className={`max-w-xs lg:max-w-md rounded-xl px-4 py-2 ${
-                    isOwn ? 'bg-primary text-white' : 'bg-surface-elevated text-text-primary'
+                  className={`max-w-xs lg:max-w-md rounded-2xl px-4 py-2 ${
+                    isOwn
+                      ? 'rounded-br-md bg-primary text-on-primary'
+                      : 'rounded-bl-md bg-surface-elevated text-text-primary'
                   }`}
                 >
                   <p className="text-sm whitespace-pre-wrap break-words">{msg.mensaje}</p>
-                  <p className={`text-xs mt-1 ${isOwn ? 'text-white/70' : 'text-text-muted'}`}>
+                  <p className={`text-xs mt-1 ${isOwn ? 'text-on-primary/70' : 'text-text-muted'}`}>
                     {new Date(msg.enviado_en).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
@@ -206,7 +217,7 @@ export default function ChatPage() {
           })}
           {otherIsTyping && (
             <div className="flex justify-start">
-              <div className="rounded-xl px-4 py-2 bg-surface-elevated text-text-muted text-sm italic">
+              <div className="rounded-2xl rounded-bl-md px-4 py-2 bg-surface-elevated text-text-muted text-sm italic">
                 {nombreEstudiante} está escribiendo...
               </div>
             </div>
@@ -214,19 +225,20 @@ export default function ChatPage() {
           <div ref={messagesEndRef} />
         </div>
 
-        <form onSubmit={handleEnviar} className="flex items-center gap-2 p-3 border-t border-gray-100">
+        <form onSubmit={handleEnviar} className="flex items-center gap-2 p-3 border-t border-line">
           <input
             type="text"
             value={nuevoMensaje}
             onChange={handleTyping}
             disabled={!isConnected}
             placeholder={isConnected ? 'Escribe un mensaje...' : 'Reconectando...'}
-            className="flex-1 rounded-lg border border-gray-200 bg-surface px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-60"
+            className={`${fieldClass} flex-1`}
           />
           <button
             type="submit"
             disabled={!nuevoMensaje.trim() || !isConnected}
-            className="w-10 h-10 rounded-lg bg-primary text-white flex items-center justify-center hover:bg-primary-hover disabled:opacity-50 cursor-pointer"
+            aria-label="Enviar mensaje"
+            className="w-10 h-10 rounded-xl bg-primary text-on-primary flex items-center justify-center shadow-sm transition-all duration-200 hover:bg-primary-hover active:scale-95 disabled:opacity-50 disabled:active:scale-100 cursor-pointer"
           >
             <Send size={18} />
           </button>

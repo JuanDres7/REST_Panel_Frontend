@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Users, Mail, MessageCircle } from 'lucide-react';
 import { Header } from '../../../components/layout/Header';
-import { Card } from '../../../components/ui';
+import { Card, CountUp } from '../../../components/ui';
 import { LoadingSpinner, ErrorState } from '../../../components/shared';
 import { pacientesApi, asignacionesApi } from '../../../api';
+import { useEntranceRef } from '../../../hooks/useEntrance';
 
 export default function DashboardPage() {
   const [stats, setStats] = useState({ pacientes: 0, solicitudes: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const ref = useEntranceRef<HTMLDivElement>({ ready: !loading && !error });
 
   useEffect(() => {
     loadData();
@@ -32,38 +34,38 @@ export default function DashboardPage() {
   if (error) return <ErrorState message={error} onRetry={loadData} />;
 
   return (
-    <div>
+    <div ref={ref}>
       <Header title="Dashboard" subtitle="Vista general de tu actividad" />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <Card data-enter className="transition-shadow duration-200 hover:shadow-card-hover">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-lg bg-primary-light flex items-center justify-center">
-              <Users className="text-primary" size={24} />
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-light">
+              <Users className="text-primary" size={26} />
             </div>
             <div>
-              <p className="text-3xl font-bold text-text-primary">{stats.pacientes}</p>
+              <CountUp value={stats.pacientes} className="block text-3xl font-bold text-text-primary" />
               <p className="text-sm text-text-secondary">Pacientes activos</p>
             </div>
           </div>
         </Card>
 
-        <Card>
+        <Card data-enter className="transition-shadow duration-200 hover:shadow-card-hover">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-lg bg-amber-50 flex items-center justify-center">
-              <Mail className="text-semaforo-amarillo" size={24} />
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-semaforo-amarillo-soft">
+              <Mail className="text-semaforo-amarillo-ink" size={26} />
             </div>
             <div>
-              <p className="text-3xl font-bold text-text-primary">{stats.solicitudes}</p>
+              <CountUp value={stats.solicitudes} className="block text-3xl font-bold text-text-primary" />
               <p className="text-sm text-text-secondary">Solicitudes pendientes</p>
             </div>
           </div>
         </Card>
 
-        <Card>
+        <Card data-enter className="transition-shadow duration-200 hover:shadow-card-hover">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-lg bg-secondary-light flex items-center justify-center">
-              <MessageCircle className="text-secondary" size={24} />
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-secondary-light">
+              <MessageCircle className="text-secondary" size={26} />
             </div>
             <div>
               <p className="text-3xl font-bold text-text-primary">--</p>

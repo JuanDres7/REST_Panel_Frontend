@@ -2,10 +2,12 @@ import { useNavigate } from 'react-router-dom';
 import { ShieldOff } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { useAuthStore } from '../store/authStore';
+import { useEntranceRef } from '../../../hooks/useEntrance';
 
 export function ForbiddenPage() {
   const navigate = useNavigate();
   const logout = useAuthStore((s) => s.logout);
+  const ref = useEntranceRef<HTMLDivElement>();
 
   const handleLogout = () => {
     logout();
@@ -13,14 +15,16 @@ export function ForbiddenPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface-secondary p-4">
-      <div className="text-center max-w-md">
-        <ShieldOff className="h-16 w-16 text-coral mx-auto mb-6" />
-        <h1 className="text-2xl font-bold text-text-primary mb-2">Acceso denegado</h1>
-        <p className="text-text-secondary mb-6">
+    <div className="flex min-h-screen items-center justify-center bg-surface-secondary p-4">
+      <div ref={ref} className="max-w-md text-center">
+        <div data-enter className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-coral-light">
+          <ShieldOff className="h-12 w-12 text-coral" />
+        </div>
+        <h1 data-enter className="mb-2 text-3xl font-bold tracking-tight text-text-primary">Acceso denegado</h1>
+        <p data-enter className="mb-6 text-text-secondary">
           No tienes permiso para acceder a este recurso. Si crees que esto es un error, contacta al administrador.
         </p>
-        <div className="flex flex-col gap-3">
+        <div data-enter className="flex flex-col gap-3">
           <Button variant="coral" onClick={handleLogout}>
             Cerrar sesion
           </Button>

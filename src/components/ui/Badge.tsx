@@ -10,10 +10,10 @@ const variants = {
   primary: 'bg-primary-light text-primary',
   secondary: 'bg-secondary-light text-secondary',
   coral: 'bg-coral-light text-coral',
-  verde: 'bg-green-50 text-semaforo-verde',
-  amarillo: 'bg-amber-50 text-semaforo-amarillo',
-  rojo: 'bg-red-50 text-semaforo-rojo',
-  gray: 'bg-gray-100 text-text-secondary',
+  verde: 'bg-semaforo-verde-soft text-semaforo-verde-ink',
+  amarillo: 'bg-semaforo-amarillo-soft text-semaforo-amarillo-ink',
+  rojo: 'bg-semaforo-rojo-soft text-semaforo-rojo-ink',
+  gray: 'bg-surface-elevated text-text-secondary',
 };
 
 export function Badge({ variant = 'gray', children, className = '' }: BadgeProps) {

@@ -34,14 +34,14 @@ export function RegistrosEmocional({ pacienteId }: RegistrosEmocionalProps) {
   if (error) return <ErrorState message={error} onRetry={loadRegistros} />;
 
   return (
-    <Card className="mt-4">
+    <Card data-enter className="mt-4">
       <h3 className="text-lg font-semibold text-text-primary mb-4">Registro Emocional</h3>
       {registros.length === 0 ? (
         <EmptyState title="Sin registros" description="El paciente no ha completado registros emocionales recientes." />
       ) : (
         <div className="space-y-3">
           {registros.map((reg, index) => (
-            <div key={reg.id || index} className="flex items-center justify-between p-3 bg-surface-secondary rounded-lg">
+            <div key={reg.id || index} className="flex items-center justify-between p-3 bg-surface-secondary rounded-xl">
               <div>
                 <p className="font-medium text-text-primary capitalize">{reg.categoria}</p>
                 <p className="text-xs text-text-muted mt-1">

@@ -11,5 +11,5 @@ export function semaforoBarClass(nivel: string | null | undefined): string {
   if (nivel === 'verde') return 'bg-semaforo-verde';
   if (nivel === 'amarillo') return 'bg-semaforo-amarillo';
   if (nivel === 'rojo') return 'bg-semaforo-rojo';
-  return 'bg-gray-200';
+  return 'bg-line';
 }
